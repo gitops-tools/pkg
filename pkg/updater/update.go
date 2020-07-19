@@ -12,6 +12,8 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
+// TODO: split this into separate commit / pull request logic.
+
 // UpdateYAMLInput is the configuration for updating a file in a repository.
 type UpdateYAMLInput struct {
 	Key      string // key - the key within the YAML file to be updated, use a dotted path
@@ -25,6 +27,14 @@ type UpdateFileInput struct {
 	CommitInput
 }
 
+// ContentUpdater takes an existing body, it should transform it, and return the
+// updated body.
+type ContentUpdater func([]byte) ([]byte, error)
+
+// UpdaterFunc is an option for for creating new Updaters.
+type UpdaterFunc func(u *Updater)
+
+// CommitInput is used to configure the commit and pull request.
 type CommitInput struct {
 	Repo               string           // e.g. my-org/my-repo
 	Filename           string           // relative path to the file in the repository
@@ -47,17 +57,15 @@ type logger interface {
 	Debugw(msg string, keysAndValues ...interface{})
 }
 
-type updaterFunc func(u *Updater)
-
 // NameGenerator is an option func for the Updater creation function.
-func NameGenerator(g names.Generator) updaterFunc {
+func NameGenerator(g names.Generator) UpdaterFunc {
 	return func(u *Updater) {
 		u.nameGenerator = g
 	}
 }
 
 // New creates and returns a new Updater.
-func New(l logger, c client.GitClient, opts ...updaterFunc) *Updater {
+func New(l logger, c client.GitClient, opts ...UpdaterFunc) *Updater {
 	u := &Updater{gitClient: c, nameGenerator: names.New(timeSeed), log: l}
 	for _, o := range opts {
 		o(u)
@@ -80,11 +88,9 @@ func (u *Updater) UpdateYAML(ctx context.Context, input *UpdateYAMLInput) (*scm.
 	})
 }
 
-type contentUpdater func([]byte) ([]byte, error)
-
 // ApplyUpdateToFile does the job of fetching the existing file, passing it to a
 // user-provided function, and optionally creating a PR.
-func (u *Updater) ApplyUpdateToFile(ctx context.Context, input CommitInput, f contentUpdater) (*scm.PullRequest, error) {
+func (u *Updater) ApplyUpdateToFile(ctx context.Context, input CommitInput, f ContentUpdater) (*scm.PullRequest, error) {
 	current, err := u.gitClient.GetFile(ctx, input.Repo, input.Branch, input.Filename)
 	if err != nil {
 		u.log.Errorw("failed to get file from repo", "error", err)
