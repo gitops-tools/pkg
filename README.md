@@ -1,6 +1,8 @@
-# gitops-tools/common
+# common
 
 This is a shared repository for tooling for interacting with Git.
+
+This is alpha code, just extracted from another project for reuse.
 
 ## updater
 
