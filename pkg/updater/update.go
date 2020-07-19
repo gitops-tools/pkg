@@ -6,10 +6,18 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/go-logr/logr"
+	"github.com/jenkins-x/go-scm/scm"
+	"go.uber.org/zap/zapcore"
+
 	"github.com/bigkevmcd/common/pkg/client"
 	"github.com/bigkevmcd/common/pkg/names"
 	"github.com/bigkevmcd/common/pkg/syaml"
-	"github.com/jenkins-x/go-scm/scm"
+)
+
+const (
+	debugLevel = int(zapcore.DebugLevel)
+	errorLevel = int(zapcore.ErrorLevel)
 )
 
 // TODO: split this into separate commit / pull request logic.
@@ -52,11 +60,6 @@ type PullRequestInput struct {
 
 var timeSeed = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-type logger interface {
-	Errorw(msg string, keysAndValues ...interface{})
-	Debugw(msg string, keysAndValues ...interface{})
-}
-
 // NameGenerator is an option func for the Updater creation function.
 func NameGenerator(g names.Generator) UpdaterFunc {
 	return func(u *Updater) {
@@ -65,7 +68,7 @@ func NameGenerator(g names.Generator) UpdaterFunc {
 }
 
 // New creates and returns a new Updater.
-func New(l logger, c client.GitClient, opts ...UpdaterFunc) *Updater {
+func New(l logr.Logger, c client.GitClient, opts ...UpdaterFunc) *Updater {
 	u := &Updater{gitClient: c, nameGenerator: names.New(timeSeed), log: l}
 	for _, o := range opts {
 		o(u)
@@ -77,7 +80,7 @@ func New(l logger, c client.GitClient, opts ...UpdaterFunc) *Updater {
 type Updater struct {
 	gitClient     client.GitClient
 	nameGenerator names.Generator
-	log           logger
+	log           logr.Logger
 }
 
 // UpdateYAML does the job of fetching the existing file, updating it, and
@@ -93,10 +96,10 @@ func (u *Updater) UpdateYAML(ctx context.Context, input *UpdateYAMLInput) (*scm.
 func (u *Updater) ApplyUpdateToFile(ctx context.Context, input CommitInput, f ContentUpdater) (*scm.PullRequest, error) {
 	current, err := u.gitClient.GetFile(ctx, input.Repo, input.Branch, input.Filename)
 	if err != nil {
-		u.log.Errorw("failed to get file from repo", "error", err)
+		u.log.V(errorLevel).Info("failed to get file from repo", "err", err)
 		return nil, err
 	}
-	u.log.Debugw("got existing file", "sha", current.Sha)
+	u.log.V(debugLevel).Info("got existing file", "sha", current.Sha)
 	updated, err := f(current.Data)
 	if err != nil {
 		return nil, err
@@ -117,7 +120,7 @@ func (u *Updater) applyUpdate(ctx context.Context, input CommitInput, currentSHA
 	if err != nil {
 		return nil, fmt.Errorf("failed to update file: %w", err)
 	}
-	u.log.Debugw("updated file", "filename", input.Filename)
+	u.log.V(debugLevel).Info("updated file", "filename", input.Filename)
 	return u.createPRIfNecessary(ctx, input, newBranchName)
 }
 
@@ -126,7 +129,7 @@ func (u *Updater) applyUpdate(ctx context.Context, input CommitInput, currentSHA
 func (u *Updater) UpdateFile(ctx context.Context, input *UpdateFileInput) (*scm.PullRequest, error) {
 	current, err := u.gitClient.GetFile(ctx, input.Repo, input.Branch, input.Filename)
 	if err != nil {
-		u.log.Errorw("failed to get file from repo", "error", err)
+		u.log.V(debugLevel).Info("failed to get file from repo", "err", err)
 		return nil, err
 	}
 	return u.applyUpdate(ctx, input.CommitInput, current.Sha, input.Body)
@@ -134,17 +137,17 @@ func (u *Updater) UpdateFile(ctx context.Context, input *UpdateFileInput) (*scm.
 
 func (u *Updater) createBranchIfNecessary(ctx context.Context, input CommitInput, sourceRef string) (string, error) {
 	if input.BranchGenerateName == "" {
-		u.log.Debugw("no branchGenerateName configured, reusing source branch", "branch", input.Branch)
+		u.log.V(debugLevel).Info("no branchGenerateName configured, reusing source branch", "branch", input.Branch)
 		return input.Branch, nil
 	}
 
 	newBranchName := u.nameGenerator.PrefixedName(input.BranchGenerateName)
-	u.log.Debugw("generating new branch", "name", newBranchName)
+	u.log.V(debugLevel).Info("generating new branch", "name", newBranchName)
 	err := u.gitClient.CreateBranch(ctx, input.Repo, newBranchName, sourceRef)
 	if err != nil {
 		return "", fmt.Errorf("failed to create branch: %w", err)
 	}
-	u.log.Debugw("created branch", "branch", newBranchName, "ref", sourceRef)
+	u.log.V(debugLevel).Info("created branch", "branch", newBranchName, "ref", sourceRef)
 	return newBranchName, nil
 }
 
@@ -161,6 +164,6 @@ func (u *Updater) createPRIfNecessary(ctx context.Context, input CommitInput, ne
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a pull request: %w", err)
 	}
-	u.log.Debugw("created PullRequest", "number", pr.Number)
+	u.log.V(debugLevel).Info("created PullRequest", "number", pr.Number)
 	return pr, nil
 }

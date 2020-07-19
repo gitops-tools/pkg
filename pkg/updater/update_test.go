@@ -7,8 +7,7 @@ import (
 
 	"github.com/bigkevmcd/common/pkg/client/mock"
 	"github.com/jenkins-x/go-scm/scm"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest"
+	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 )
 
 const (
@@ -23,9 +22,7 @@ func TestUpdateYAML(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	input := makeUpdateYAMLInput()
 	pr, err := updater.UpdateYAML(context.Background(), input)
 	if err != nil {
@@ -54,9 +51,7 @@ func TestUpdateYAMLWithMissingFile(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	testErr := errors.New("missing file")
 	m.GetFileErr = testErr
 
@@ -78,9 +73,7 @@ func TestUpdateYAMLWithBranchCreationFailure(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	testErr := errors.New("can't create branch")
 	m.CreateBranchErr = testErr
 
@@ -102,9 +95,7 @@ func TestUpdateYAMLWithUpdateFileFailure(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	testErr := errors.New("can't update file")
 	m.UpdateFileErr = testErr
 	input := makeUpdateYAMLInput()
@@ -127,9 +118,7 @@ func TestUpdateYAMLWithCreatePullRequestFailure(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	testErr := errors.New("can't create pull-request")
 	m.CreatePullRequestErr = testErr
 	input := makeUpdateYAMLInput()
@@ -153,11 +142,9 @@ func TestUpdateYAMLWithNonMainSourceBranch(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, "staging", []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, "staging", testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
 	input := makeUpdateYAMLInput()
 	input.Branch = "staging"
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 
 	_, err := updater.UpdateYAML(context.Background(), input)
 	if err != nil {
@@ -183,9 +170,7 @@ func TestUpdateFile(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	input := makeUpdateFileInput()
 	pr, err := updater.UpdateFile(context.Background(), input)
 	if err != nil {
@@ -213,9 +198,7 @@ func TestApplyUpdateToFile(t *testing.T) {
 	m := mock.New(t)
 	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
 	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
-	logger := zaptest.NewLogger(t, zaptest.Level(zap.WarnLevel)).Sugar()
-
-	updater := New(logger, m, NameGenerator(stubNameGenerator{"a"}))
+	updater := New(logf.ZapLogger(true), m, NameGenerator(stubNameGenerator{"a"}))
 	input := makeCommitInput()
 	newBody := []byte("new content")
 	pr, err := updater.ApplyUpdateToFile(context.Background(), input, func([]byte) ([]byte, error) {
