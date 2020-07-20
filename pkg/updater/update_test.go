@@ -16,6 +16,8 @@ const (
 	testBranch     = "main"
 )
 
+var _ GitUpdater = (*Updater)(nil)
+
 func TestApplyUpdateToFile(t *testing.T) {
 	testSHA := "980a0d5f19a64b4b30a87d4206aade58726b60e3"
 	m := mock.New(t)
