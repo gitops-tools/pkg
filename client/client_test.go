@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/bigkevmcd/common/test"
+	"github.com/gitops-tools/pkg/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/factory"

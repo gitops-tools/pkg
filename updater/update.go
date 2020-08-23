@@ -9,22 +9,9 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/jenkins-x/go-scm/scm"
 
-	"github.com/bigkevmcd/common/pkg/client"
-	"github.com/bigkevmcd/common/pkg/names"
+	"github.com/gitops-tools/pkg/client"
+	"github.com/gitops-tools/pkg/names"
 )
-
-// UpdateYAMLInput is the configuration for updating a file in a repository.
-type UpdateYAMLInput struct {
-	Key      string // key - the key within the YAML file to be updated, use a dotted path
-	NewValue interface{}
-	CommitInput
-}
-
-// UpdateFileInput is the configuration for updating a file in a repository.
-type UpdateFileInput struct {
-	Body []byte // replacement file contents
-	CommitInput
-}
 
 // ContentUpdater takes an existing body, it should transform it, and return the
 // updated body.

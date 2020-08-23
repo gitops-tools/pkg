@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bigkevmcd/common/pkg/client"
+	"github.com/gitops-tools/pkg/client"
 	"github.com/jenkins-x/go-scm/scm"
 )
 

@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"github.com/bigkevmcd/common/pkg/syaml"
+	"github.com/gitops-tools/pkg/syaml"
 )
 
 // ReplaceContents is a ContentUpdater that replaces the content of file with the
