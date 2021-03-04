@@ -40,7 +40,7 @@ func main() {
 		Filename:           "service/deployment.yaml",
 		Branch:             "main",
 		Key:                "metadata.annotations.reviewed",
-		NewValue:           "test-user"
+		NewValue:           "test-user",
 		BranchGenerateName: "test-branch-",
 		CommitMessage:      "testing a common component library",
 		PullRequest: updater.PullRequestInput{
