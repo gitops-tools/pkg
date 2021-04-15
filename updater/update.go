@@ -25,6 +25,7 @@ type CommitInput struct {
 	Repo               string // e.g. my-org/my-repo
 	Filename           string // relative path to the file in the repository
 	Branch             string // e.g. main
+	NewBranchName      string // e.g. feature-update-image
 	BranchGenerateName string // e.g. update-image-
 	CommitMessage      string // This is used for the commit when updating the file
 }
@@ -97,13 +98,15 @@ func (u *Updater) applyUpdate(ctx context.Context, input CommitInput, currentSHA
 }
 
 func (u *Updater) createBranchIfNecessary(ctx context.Context, input CommitInput, sourceRef string) (string, error) {
-	if input.BranchGenerateName == "" {
-		u.log.Info("no branchGenerateName configured, reusing source branch", "branch", input.Branch)
+	newBranchName := input.NewBranchName
+	if input.BranchGenerateName == "" && newBranchName == "" {
+		u.log.Info("no branchGenerateName/newBranchName configured, reusing source branch", "branch", input.Branch)
 		return input.Branch, nil
 	}
-
-	newBranchName := u.nameGenerator.PrefixedName(input.BranchGenerateName)
-	u.log.Info("generating new branch", "name", newBranchName)
+	if newBranchName == "" {
+		newBranchName = u.nameGenerator.PrefixedName(input.BranchGenerateName)
+		u.log.Info("generating new branch", "name", newBranchName)
+	}
 	err := u.gitClient.CreateBranch(ctx, input.Repo, newBranchName, sourceRef)
 	if err != nil {
 		return "", fmt.Errorf("failed to create branch: %w", err)
