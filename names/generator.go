@@ -30,8 +30,6 @@ func New(r *rand.Rand) *RandomGenerator {
 //
 // If the prefix ends with "-" this will be preserved in the trimmed string,
 // before adding the prefix.
-// TODO: this should limit the length based on the prefix because branch names
-// have a limit.
 func (g RandomGenerator) PrefixedName(prefix string) string {
 	charset := "abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, g.SuffixLen)
