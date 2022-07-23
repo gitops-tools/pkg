@@ -1,17 +1,30 @@
 package sanitize
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
 
 // ErrEmptyName is returned if an empty string is provided for sanitising.
-var ErrEmptyName = errors.New("DNS name can not be empty")
+var ErrEmptyName = invalidName("DNS name can not be empty")
 
 // MaxDNSNameLength is the limit for some resources Name fields where they can
-// be used as DNS names.
+// be used as DNS names per RFC 1035.
 const MaxDNSNameLength = 63
+
+// MaxK8sValueLength is the limit for names that can be used as DNS subdomain
+// values per RFC 1123.
+// https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+const MaxK8SValueLength = 253
+
+// InvalidNameError is returned when a name can't be sanitized.
+type InvalidNameError struct {
+	msg string
+}
+
+func (m InvalidNameError) Error() string {
+	return m.msg
+}
 
 // SanitizeDNSName sanitizes a string suitable for use in K8s resources that
 // require a DNS 1035 compatible name.
@@ -28,7 +41,7 @@ func SanitizeDNSName(name string) (string, error) {
 	runes := []rune(strings.ToLower(name))
 	start := findIndex(runes, isAlpha)
 	if start == len(runes) {
-		return "", fmt.Errorf("DNS name %q does not start with a valid character", name)
+		return "", invalidNamef("DNS name %q does not start with a valid character", name)
 	}
 
 	end := max(start, len(runes)-1)
@@ -44,11 +57,40 @@ func SanitizeDNSName(name string) (string, error) {
 	}
 
 	if len(output) > MaxDNSNameLength {
-		return "", fmt.Errorf("DNS name %q exceeded maximum length of %v", name, MaxDNSNameLength)
+		return "", invalidNamef("DNS name %q exceeded maximum length of %v", name, MaxDNSNameLength)
 	}
 
 	if len(output) == 0 {
-		return "", fmt.Errorf("DNS name %q sanitized is empty", name)
+		return "", invalidNamef("DNS name %q sanitized is empty", name)
+	}
+
+	return output, nil
+}
+
+// DNS subdomains are DNS labels separated by '.', max 253 characters.
+func SanitizeDNSDomain(name string) (string, error) {
+	if name == "" {
+		return "", ErrEmptyName
+	}
+	dnsSegments := strings.Split(name, ".")
+
+	firstSegment := true
+	output := ""
+	for _, segment := range dnsSegments {
+		sanitized, err := SanitizeDNSName(segment)
+		if err != nil {
+			return "", err
+		}
+		if firstSegment {
+			output += sanitized
+			firstSegment = false
+			continue
+		}
+		output += "." + sanitized
+	}
+
+	if len(output) > MaxK8SValueLength {
+		return "", invalidNamef("DNS name %q exceeded maximum length of %v", name, MaxK8SValueLength)
 	}
 
 	return output, nil
@@ -80,4 +122,11 @@ func max(x, y int) int {
 		return y
 	}
 	return x
+}
+
+func invalidName(s string) InvalidNameError {
+	return InvalidNameError{msg: s}
+}
+func invalidNamef(format string, a ...any) InvalidNameError {
+	return InvalidNameError{msg: fmt.Sprintf(format, a...)}
 }
