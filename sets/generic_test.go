@@ -53,7 +53,7 @@ func TestSet_Insert(t *testing.T) {
 		nsn("test"),
 	}
 	if diff := cmp.Diff(want, ss.List(), sortNamespaces()); diff != "" {
-		t.Fatalf("failed to create set with items:\n%s", diff)
+		t.Fatalf("failed to insert items:\n%s", diff)
 	}
 	if l := ss.Len(); l != 2 {
 		t.Fatalf("Len() got %v, want 2", l)
@@ -71,7 +71,7 @@ func TestSet_Delete(t *testing.T) {
 		nsn("test2"),
 	}
 	if diff := cmp.Diff(want, ss.List()); diff != "" {
-		t.Fatalf("failed to create set with items:\n%s", diff)
+		t.Fatalf("failed to delete items:\n%s", diff)
 	}
 }
 
@@ -321,6 +321,26 @@ func TestSet_Intersection(t *testing.T) {
 		if !intersection.Equal(test.want) {
 			t.Errorf("Expected intersection.Equal(want) but not true.  intersection:%v want:%v", intersection.List(), test.want.List())
 		}
+	}
+}
+
+func TestSet_SortedList(t *testing.T) {
+	ss := New[types.NamespacedName]()
+
+	ss.Insert(nsn("test1"), nsn("test3"), nsn("test2"), nsn("test4"))
+
+	want := []types.NamespacedName{
+		nsn("test1"),
+		nsn("test2"),
+		nsn("test3"),
+		nsn("test4"),
+	}
+	sortFunc := func(x, y types.NamespacedName) bool {
+		return x.String() < y.String()
+	}
+
+	if diff := cmp.Diff(want, ss.SortedList(sortFunc)); diff != "" {
+		t.Fatalf("failed to sort set with:\n%s", diff)
 	}
 }
 

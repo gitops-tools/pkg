@@ -1,5 +1,7 @@
 package sets
 
+import "sort"
+
 type empty struct{}
 
 // Set is a generic Set implementation with some basic Set methods.
@@ -48,6 +50,23 @@ func (s Set[T]) List() []T {
 	for key := range s {
 		res = append(res, key)
 	}
+
+	return res
+}
+
+// SortedList returns a slice with all the items sorted using the sort function.
+//
+// The sort func is passed through to sort.Slice.
+func (s Set[T]) SortedList(sorter func(x, y T) bool) []T {
+	if len(s) == 0 {
+		return nil
+	}
+
+	res := make([]T, 0, len(s))
+	for key := range s {
+		res = append(res, key)
+	}
+	sort.SliceStable(res, func(i, j int) bool { return sorter(res[i], res[j]) })
 
 	return res
 }
