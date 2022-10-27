@@ -1,0 +1,58 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Get values for cache paths to be used in later steps
+      id: go-cache-paths
+      run: |
+        echo "::set-output name=go-build::$(go env GOCACHE)"
+        echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+
+    - name: Go Build Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.go-cache-paths.outputs.go-build }}
+        key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+
+    - name: Go Mod Cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.go-cache-paths.outputs.go-mod }}
+        key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+
+    - name: Get Envtest path
+      id: envtest-info
+      run: |
+        VERSION=1.24.3
+        echo "::set-output name=envtest-version::${VERSION}"
+        echo "::set-output name=envtest-path::/home/runner/.local/share/kubebuilder-envtest/k8s/${VERSION}-$(go env GOOS)-$(go env GOARCH)"
+        echo "::set-output name=goos::$(go env GOOS)"
+        echo "::set-output name=goarch::$(go env GOARCH)"
+
+    - name: Kubebuilder Envtest
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.envtest-info.outputs.envtest-path }}
+        key: Envtest-cache-${{ steps.envtest-info.outputs.envtest-version }}-${{ steps.envtest-info.outputs.goos }}-${{ steps.envtest-info.outputs.goarch }}
+
+    - name: Test
+      run: make test
