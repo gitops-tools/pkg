@@ -44,6 +44,36 @@ func TestApplyUpdateToFile(t *testing.T) {
 	m.AssertNoPullRequestsCreated()
 }
 
+func TestApplyUpdateToFileWithNewBranchName(t *testing.T) {
+	testSHA := "980a0d5f19a64b4b30a87d4206aade58726b60e3"
+	m := mock.New(t)
+	m.AddFileContents(testGitHubRepo, testFilePath, testBranch, []byte("test:\n  image: old-image\n"))
+	m.AddBranchHead(testGitHubRepo, testBranch, testSHA)
+	updater := New(zap.New(), m, NameGenerator(stubNameGenerator{"a"}))
+	newBody := []byte("new content")
+
+	branch, err := updater.ApplyUpdateToFile(context.Background(), makeCommitInput(
+		func(ci *CommitInput) {
+			ci.NewBranchName = "new-test-branch"
+		}),
+		func([]byte) ([]byte, error) {
+			return newBody, nil
+		})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if branch != "new-test-branch" {
+		t.Fatalf("newly created branch, got %v, want %v", branch, "new-test-branch")
+	}
+	updated := m.GetUpdatedContents(testGitHubRepo, testFilePath, "new-test-branch")
+	if s := string(updated); s != string(newBody) {
+		t.Fatalf("update failed, got %s, want %s", s, newBody)
+	}
+	m.AssertBranchCreated(testGitHubRepo, "new-test-branch", testSHA)
+	m.AssertNoPullRequestsCreated()
+}
+
 func TestApplyUpdateToFileMissingFile(t *testing.T) {
 	testSHA := "980a0d5f19a64b4b30a87d4206aade58726b60e3"
 	m := mock.New(t)
@@ -135,14 +165,19 @@ func (s stubNameGenerator) PrefixedName(p string) string {
 	return p + s.name
 }
 
-func makeCommitInput() CommitInput {
-	return CommitInput{
+func makeCommitInput(opts ...func(*CommitInput)) CommitInput {
+	ci := CommitInput{
 		Repo:               testGitHubRepo,
 		Filename:           testFilePath,
 		Branch:             testBranch,
 		BranchGenerateName: "test-branch-",
 		CommitMessage:      "just a test commit",
 	}
+	for _, opt := range opts {
+		opt(&ci)
+	}
+
+	return ci
 }
 
 func makePullRequestInput() PullRequestInput {
