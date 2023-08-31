@@ -46,7 +46,11 @@ func ClientFromSecret(ctx context.Context, cl client.Client, name types.Namespac
 	if err != nil {
 		return nil, err
 	}
-	mapper, err := apiutil.NewDynamicRESTMapper(cfg)
+	httpClient, err := rest.HTTPClientFor(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create an HTTP client for cluster: %w", err)
+	}
+	mapper, err := apiutil.NewDynamicRESTMapper(cfg, httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create REST mapper: %w", err)
 	}
