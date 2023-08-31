@@ -24,7 +24,11 @@ func TestClientFromSecret(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer testEnv.Stop()
+	defer func() {
+		if err := testEnv.Stop(); err != nil {
+			t.Fatalf("failed to shutdown testEnv: %s", err)
+		}
+	}()
 
 	cl, err := client.New(testCfg, client.Options{Scheme: runtimeScheme})
 	if err != nil {

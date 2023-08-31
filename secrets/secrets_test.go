@@ -15,7 +15,7 @@ var _ SecretGetter = (*KubeSecretGetter)(nil)
 var testID = types.NamespacedName{Name: "test-secret", Namespace: "test-ns"}
 
 func TestSecretToken(t *testing.T) {
-	g := New(fake.NewFakeClient(createSecret(testID, "secret-token")))
+	g := New(fake.NewClientBuilder().WithObjects(createSecret(testID, "secret-token")).Build())
 
 	secret, err := g.SecretToken(context.TODO(), testID, "token")
 	if err != nil {
@@ -28,7 +28,7 @@ func TestSecretToken(t *testing.T) {
 }
 
 func TestSecretTokenWithMissingKey(t *testing.T) {
-	g := New(fake.NewFakeClient(createSecret(testID, "secret-token")))
+	g := New(fake.NewClientBuilder().WithObjects(createSecret(testID, "secret-token")).Build())
 
 	_, err := g.SecretToken(context.TODO(), testID, "unknown")
 	if err.Error() != `secret invalid, no "unknown" key in test-ns/test-secret` {
@@ -37,7 +37,7 @@ func TestSecretTokenWithMissingKey(t *testing.T) {
 }
 
 func TestSecretTokenWithMissingSecret(t *testing.T) {
-	g := New(fake.NewFakeClient())
+	g := New(fake.NewClientBuilder().Build())
 
 	_, err := g.SecretToken(context.TODO(), testID, "token")
 	if err.Error() != `error getting secret test-ns/test-secret: secrets "test-secret" not found` {

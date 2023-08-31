@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/gitops-tools/pkg/test"
@@ -242,7 +242,7 @@ func TestGetBranchHead(t *testing.T) {
 
 func mustParseJSONAsContent(t *testing.T, filename string) *scm.Content {
 	t.Helper()
-	body, err := ioutil.ReadFile(filename)
+	body, err := os.ReadFile(filename)
 	if err != nil {
 		t.Fatal(err)
 	}
