@@ -1,6 +1,6 @@
 module github.com/gitops-tools/pkg
 
-go 1.19
+go 1.22.0
 
 require (
 	github.com/go-logr/logr v1.2.4
