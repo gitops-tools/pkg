@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
-	github.com/jenkins-x/go-scm v1.14.11
+	github.com/jenkins-x/go-scm v1.15.1
 	github.com/tidwall/sjson v1.2.5
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.33.3
@@ -19,8 +19,9 @@ require (
 
 require (
 	code.gitea.io/sdk/gitea v0.14.0 // indirect
+	fortio.org/safecast v1.0.0 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
-	github.com/bluekeyes/go-gitdiff v0.7.1 // indirect
+	github.com/bluekeyes/go-gitdiff v0.8.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
