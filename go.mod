@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
-	github.com/jenkins-x/go-scm v1.15.1
+	github.com/jenkins-x/go-scm v1.15.13
 	github.com/tidwall/sjson v1.2.5
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.33.3
@@ -21,7 +21,7 @@ require (
 	code.gitea.io/sdk/gitea v0.14.0 // indirect
 	fortio.org/safecast v1.0.0 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
-	github.com/bluekeyes/go-gitdiff v0.8.0 // indirect
+	github.com/bluekeyes/go-gitdiff v0.8.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
@@ -57,11 +57,11 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/oauth2 v0.27.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/term v0.30.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
+	golang.org/x/oauth2 v0.30.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/term v0.31.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
