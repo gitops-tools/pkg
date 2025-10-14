@@ -30,10 +30,10 @@ func (m InvalidNameError) Error() string {
 // require a DNS 1035 compatible name.
 //
 // The name returned from here must conform to following rules (as per RFC 1035):
-//  - length must be <= 63 characters
-//  - must be all lower case alphanumeric characters or '-'
-//  - must start with an alphabet
-//  - must end with an alphanumeric character
+//   - length must be <= 63 characters
+//   - must be all lower case alphanumeric characters or '-'
+//   - must start with an alphabet
+//   - must end with an alphanumeric character
 func SanitizeDNSName(name string) (string, error) {
 	if name == "" {
 		return "", ErrEmptyName

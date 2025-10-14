@@ -3,8 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"math/rand"
-	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/jenkins-x/go-scm/scm"
@@ -39,8 +37,6 @@ type PullRequestInput struct {
 	Body         string
 }
 
-var timeSeed = rand.New(rand.NewSource(time.Now().UnixNano()))
-
 // NameGenerator is an option func for the Updater creation function.
 func NameGenerator(g names.Generator) UpdaterFunc {
 	return func(u *Updater) {
@@ -50,7 +46,7 @@ func NameGenerator(g names.Generator) UpdaterFunc {
 
 // New creates and returns a new Updater.
 func New(l logr.Logger, c client.GitClient, opts ...UpdaterFunc) *Updater {
-	u := &Updater{gitClient: c, nameGenerator: names.New(timeSeed), log: l}
+	u := &Updater{gitClient: c, nameGenerator: names.New(), log: l}
 	for _, o := range opts {
 		o(u)
 	}

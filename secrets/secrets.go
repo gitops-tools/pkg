@@ -25,13 +25,12 @@ func New(c client.Client) *KubeSecretGetter {
 // it, or an error if not found.
 func (k KubeSecretGetter) SecretToken(ctx context.Context, id types.NamespacedName, key string) (string, error) {
 	loaded := &corev1.Secret{}
-	err := k.kubeClient.Get(context.TODO(), id, loaded)
-	if err != nil {
+	if err := k.kubeClient.Get(ctx, id, loaded); err != nil {
 		return "", fmt.Errorf("error getting secret %s/%s: %w", id.Namespace, id.Name, err)
 	}
 	token, ok := loaded.Data[key]
 	if !ok {
-		return "", fmt.Errorf("secret invalid, no %#v key in %s/%s", key, id.Namespace, id.Name)
+		return "", fmt.Errorf("secret invalid, no %q key in %s/%s", key, id.Namespace, id.Name)
 	}
 	return string(token), nil
 }
