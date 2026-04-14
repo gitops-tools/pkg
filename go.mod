@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
-	github.com/jenkins-x/go-scm v1.15.17
+	github.com/jenkins-x/go-scm v1.15.21
 	github.com/tidwall/sjson v1.2.5
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.35.3
@@ -61,7 +61,7 @@ require (
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.47.0 // indirect
-	golang.org/x/oauth2 v0.31.0 // indirect
+	golang.org/x/oauth2 v0.33.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/term v0.37.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
