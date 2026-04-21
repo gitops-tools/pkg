@@ -10,7 +10,7 @@ require (
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.35.4
 	k8s.io/apimachinery v0.35.4
-	k8s.io/client-go v0.35.3
+	k8s.io/client-go v0.35.4
 	sigs.k8s.io/controller-runtime v0.23.3
 	sigs.k8s.io/yaml v1.6.0
 )
