@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
-	github.com/jenkins-x/go-scm v1.15.21
+	github.com/jenkins-x/go-scm v1.15.22
 	github.com/tidwall/sjson v1.2.5
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.36.0
