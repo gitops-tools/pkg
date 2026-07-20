@@ -3,7 +3,7 @@ module github.com/gitops-tools/pkg
 go 1.26.3
 
 require (
-	github.com/go-logr/logr v1.4.3
+	github.com/go-logr/logr v1.4.4
 	github.com/google/go-cmp v0.7.0
 	github.com/jenkins-x/go-scm v1.15.31
 	github.com/tidwall/sjson v1.2.5
