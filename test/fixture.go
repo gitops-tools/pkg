@@ -8,7 +8,7 @@ import (
 
 // ReadJSONFixture reads a filename into a map, and fails the test if it is
 // unable to open or parse the file.
-func ReadJSONFixture(t *testing.T, filename string) map[string]interface{} {
+func ReadJSONFixture(t *testing.T, filename string) map[string]any {
 	t.Helper()
 
 	b, err := os.ReadFile(filename)
@@ -20,10 +20,10 @@ func ReadJSONFixture(t *testing.T, filename string) map[string]interface{} {
 }
 
 // UnmarshalJSON unmarshals a byte-slice to a map.
-func UnmarshalJSON(t *testing.T, b []byte) map[string]interface{} {
+func UnmarshalJSON(t *testing.T, b []byte) map[string]any {
 	t.Helper()
 
-	result := map[string]interface{}{}
+	result := map[string]any{}
 	err := json.Unmarshal(b, &result)
 	if err != nil {
 		t.Fatalf("failed to unmarshal  %s", err)

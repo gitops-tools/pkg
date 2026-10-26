@@ -8,7 +8,7 @@ func TestSet(t *testing.T) {
 	setTests := []struct {
 		source   string
 		patch    string
-		newValue interface{}
+		newValue any
 		want     string
 	}{
 		{

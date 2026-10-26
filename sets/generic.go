@@ -1,5 +1,7 @@
 package sets
 
+import "slices"
+
 import "sort"
 
 type empty struct{}
@@ -84,13 +86,7 @@ func (s Set[T]) HasAll(items ...T) bool {
 
 // HasAny returns true if any of the items are contained in the set.
 func (s Set[T]) HasAny(items ...T) bool {
-	for _, item := range items {
-		if s.Has(item) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(items, s.Has)
 }
 
 // Difference returns a set of objects that are not in s2

@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-type fixtureFunc func(map[string]interface{})
+type fixtureFunc func(map[string]any)
 
 const secret = "secret-token"
 
@@ -45,7 +45,7 @@ func MakeHookRequest(t *testing.T, fixture, eventType string, changes ...fixture
 	return req
 }
 
-func serialiseToJSON(t *testing.T, e interface{}) *bytes.Buffer {
+func serialiseToJSON(t *testing.T, e any) *bytes.Buffer {
 	t.Helper()
 	b, err := json.Marshal(e)
 	if err != nil {

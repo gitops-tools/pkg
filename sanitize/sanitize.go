@@ -49,22 +49,22 @@ func SanitizeDNSName(name string) (string, error) {
 		end--
 	}
 
-	output := ""
+	var output strings.Builder
 	for i := start; i <= end; i++ {
 		if isAllowedDNS(runes[i]) {
-			output += string(runes[i])
+			output.WriteString(string(runes[i]))
 		}
 	}
 
-	if len(output) > MaxDNSNameLength {
+	if len(output.String()) > MaxDNSNameLength {
 		return "", invalidNamef("DNS name %q exceeded maximum length of %v", name, MaxDNSNameLength)
 	}
 
-	if len(output) == 0 {
+	if len(output.String()) == 0 {
 		return "", invalidNamef("DNS name %q sanitized is empty", name)
 	}
 
-	return output, nil
+	return output.String(), nil
 }
 
 // DNS subdomains are DNS labels separated by '.', max 253 characters.
@@ -75,25 +75,25 @@ func SanitizeDNSDomain(name string) (string, error) {
 	dnsSegments := strings.Split(name, ".")
 
 	firstSegment := true
-	output := ""
+	var output strings.Builder
 	for _, segment := range dnsSegments {
 		sanitized, err := SanitizeDNSName(segment)
 		if err != nil {
 			return "", err
 		}
 		if firstSegment {
-			output += sanitized
+			output.WriteString(sanitized)
 			firstSegment = false
 			continue
 		}
-		output += "." + sanitized
+		output.WriteString("." + sanitized)
 	}
 
-	if len(output) > MaxK8SValueLength {
+	if len(output.String()) > MaxK8SValueLength {
 		return "", invalidNamef("DNS name %q exceeded maximum length of %v", name, MaxK8SValueLength)
 	}
 
-	return output, nil
+	return output.String(), nil
 }
 
 func isAlpha(c rune) bool {
@@ -109,19 +109,12 @@ func isAllowedDNS(c rune) bool {
 }
 
 func findIndex(runes []rune, pred func(c rune) bool) int {
-	for i := 0; i < len(runes); i++ {
+	for i := range runes {
 		if pred(runes[i]) {
 			return i
 		}
 	}
 	return 0
-}
-
-func max(x, y int) int {
-	if x < y {
-		return y
-	}
-	return x
 }
 
 func invalidName(s string) InvalidNameError {

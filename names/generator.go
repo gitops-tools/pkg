@@ -52,10 +52,7 @@ func (g RandomGenerator) PrefixedName(prefix string) string {
 
 	lastChar := ""
 	if len(prefix)+suffixLen > g.MaxLength {
-		trimPoint := g.MaxLength - suffixLen
-		if trimPoint < 0 {
-			trimPoint = 0
-		}
+		trimPoint := max(g.MaxLength-suffixLen, 0)
 		if len(prefix) > 0 && prefix[len(prefix)-1:] == "-" && trimPoint > 0 {
 			lastChar = "-"
 			trimPoint -= 1

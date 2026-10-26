@@ -246,7 +246,7 @@ func mustParseJSONAsContent(t *testing.T, filename string) *scm.Content {
 	if err != nil {
 		t.Fatal(err)
 	}
-	data := map[string]interface{}{}
+	data := map[string]any{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		t.Fatal(err)

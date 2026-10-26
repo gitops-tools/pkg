@@ -16,7 +16,7 @@ func ReplaceContents(b []byte) ContentUpdater {
 // value, they key can be a dotted path.
 //
 // UpdateYAML("test.value", []string{"test", "value"})
-func UpdateYAML(key string, newValue interface{}) ContentUpdater {
+func UpdateYAML(key string, newValue any) ContentUpdater {
 	return func(b []byte) ([]byte, error) {
 		return syaml.SetBytes(b, key, newValue)
 	}

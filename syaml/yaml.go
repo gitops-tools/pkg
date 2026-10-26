@@ -10,7 +10,7 @@ import (
 //
 // e.g. SetBytes([]byte("name: testing\n"), "name", "new name") would would
 // return "name: newname\n"
-func SetBytes(y []byte, path string, value interface{}) ([]byte, error) {
+func SetBytes(y []byte, path string, value any) ([]byte, error) {
 	j, err := yaml.YAMLToJSON(y)
 	if err != nil {
 		return nil, err
