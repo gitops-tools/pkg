@@ -6,7 +6,7 @@ require (
 	github.com/go-logr/logr v1.4.4
 	github.com/google/go-cmp v0.7.0
 	github.com/jenkins-x/go-scm v1.17.1
-	github.com/tidwall/sjson v1.2.5
+	github.com/tidwall/sjson v1.2.7
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/api v0.37.2
 	k8s.io/apimachinery v0.37.2
@@ -64,7 +64,7 @@ require (
 	github.com/sirupsen/logrus v1.10.2 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/stretchr/testify v1.12.1 // indirect
-	github.com/tidwall/gjson v1.14.2 // indirect
+	github.com/tidwall/gjson v1.20.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
