@@ -19,7 +19,8 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: 1.25
+        go-version-file: 'go.mod'
+        cache: true
 
     - name: Get values for cache paths to be used in later steps
       id: go-cache-paths
